@@ -34,8 +34,7 @@ library(devtools)
 library(semPower)
 library(car)
 library(MASS) 
-data_path <- here("data")
-
+data_path = here("data")
 ```
 
 ### Load data
@@ -51,7 +50,7 @@ data = read_csv(here::here("data/processed/aggregated_data.csv"))
 ```{r}
 # Additional information:
 # Scores are aggregate means of the respective scales.
-# For a larger dataset, parceling or item-level analysis could be rlcsidered.
+# For a larger dataset, parceling or item-level analysis could be considered.
 # Missing data imputation was not performed for SEM
 # There is multivariate non-normality, so robust ML estimation is used.
 # Data is linear, and no multicollinearity issues were detected.
@@ -62,9 +61,9 @@ data = read_csv(here::here("data/processed/aggregated_data.csv"))
 ## Job demands as latent variable measured by item-level indicators
 
 ```{r}
-#Job demands are: workload, pubplication pressure_stress, publication_pressure_attitude, role stressors such as rlaiguity and rlcflict, work-life balance
+# Job demands are: workload, pubplication pressure_stress, publication_pressure_attitude, role stressors such as role ambiguity and role conflict, work-life balance
 
-job_demands_item = data |>
+job_demands_item = data %>% 
   dplyr::select(anonym_id, starts_with(c("wld_", "ppa_", "pps_", "rla_", "rlc_", "wlb_")))
 
 job_demands_latent_item = cfa(
@@ -77,10 +76,6 @@ job_demands_latent_item = cfa(
   
   # Structural model
   job_demands =~ wld + rla + rlc + wlb
-  
-  # Residual correlations based on theory and expected overlap
-    rla ~~ rlc
-    rlc_1 ~~ rlc_6
   ',
   data = job_demands_item,
   estimator = "MLR",
@@ -89,7 +84,7 @@ job_demands_latent_item = cfa(
 summary(job_demands_latent_item, fit.measures = TRUE, standardized = TRUE, modindices = TRUE)
 
 
-summary_text <- capture.output(summary(job_demands_latent_item, fit.measures = TRUE, standardized = TRUE, modindices = TRUE))
+summary_text = capture.output(summary(job_demands_latent_item, fit.measures = TRUE, standardized = TRUE, modindices = TRUE))
 writeLines(summary_text, here::here("analysis/tables/job_demands_summary.txt"))
 pdf(here::here("analysis/figures/demands_cfa_plot.pdf"), width = 10, height = 8)
 semPaths(job_demands_latent_item, what = "std", style = "lisrel", layout = "tree", residuals = TRUE, rotation = 4, sizeMan = 12, sizeMan2 = 6, nCharNodes = 6)
@@ -99,9 +94,9 @@ dev.off()
 ## Job demands as latent variable measured by construct-level indicators
 
 ```{r}
-#Job demands are: workload, pubplication pressure_stress, publication_pressure_attitude, role stressors such as rlaiguity and rlcflict, work-life balance
+# Job demands are: workload, pubplication pressure_stress, publication_pressure_attitude, role stressors such as rlaiguity and rlcflict, work-life balance
 
-job_demands = data |>
+job_demands = data %>% 
   dplyr::select(anonym_id, wld, rla, rlc, wlb)
 
 job_demands_latent = cfa(
@@ -119,7 +114,7 @@ job_demands_latent = cfa(
 summary(job_demands_latent, fit.measures = TRUE, standardized = TRUE, modindices = TRUE)
 
 
-summary_text <- capture.output(summary(job_demands_latent, fit.measures = TRUE, standardized = TRUE, modindices = TRUE))
+summary_text = capture.output(summary(job_demands_latent, fit.measures = TRUE, standardized = TRUE, modindices = TRUE))
 writeLines(summary_text, here::here("analysis/tables/job_demands_summary.txt"))
 pdf(here::here("analysis/figures/demands_cfa_plot.pdf"), width = 10, height = 8)
 semPaths(job_demands_latent, what = "std", style = "lisrel", layout = "tree", residuals = TRUE, rotation = 4, sizeMan = 12, sizeMan2 = 6, nCharNodes = 6)
@@ -129,7 +124,7 @@ dev.off()
 ## Job resources as latent variable measured by item-level indicators
 
 ```{r}
-job_resources_item = data |>
+job_resources_item = data %>% 
   dplyr::select(anonym_id, starts_with(c("opp_", "mng_", "inf_", "scc_", "scs_", "sec_")))
 
 job_resources_latent_item = cfa(
@@ -150,7 +145,7 @@ job_resources_latent_item = cfa(
 summary(job_resources_latent_item, fit.measures = TRUE, standardized = TRUE, modindices = TRUE)
 modindices(job_resources_latent_item, sort = TRUE)
 
-summary_text <- capture.output(summary(job_resources_latent_item, fit.measures = TRUE, standardized = TRUE, modindices = TRUE))
+summary_text = capture.output(summary(job_resources_latent_item, fit.measures = TRUE, standardized = TRUE, modindices = TRUE))
 writeLines(summary_text, here::here("analysis/tables/job_resources_summary.txt"))
 
 pdf(here::here("analysis/figures/resources_cfa_plot.pdf"), width = 10, height = 8)
@@ -161,9 +156,9 @@ dev.off()
 ## Job resources as latent variable measured by construct-level indicators
 
 ```{r}
-#Job resources are: opportunities, meaning, influence, social support, job insecurity
+# Job resources are: opportunities, meaning, influence, social support, job insecurity
 
-job_resources = data |>
+job_resources = data %>% 
   dplyr::select(anonym_id, opp, mng, inf, scc, scs, sec)
 
 job_resources_latent = cfa(
@@ -177,7 +172,7 @@ job_resources_latent = cfa(
 summary(job_resources_latent, fit.measures = TRUE, standardized = TRUE, modindices = TRUE)
 modindices(job_resources_latent, sort = TRUE)
 
-summary_text <- capture.output(summary(job_resources_latent, fit.measures = TRUE, standardized = TRUE, modindices = TRUE))
+summary_text = capture.output(summary(job_resources_latent, fit.measures = TRUE, standardized = TRUE, modindices = TRUE))
 writeLines(summary_text, here::here("analysis/tables/job_resources_summary.txt"))
 
 pdf(here::here("analysis/figures/resources_cfa_plot.pdf"), width = 10, height = 8)
@@ -211,7 +206,7 @@ modindices(jdr_b_fit, sort = TRUE)
 # compRelSEM(jdr_b_fit, higher = c("job_demands", "job_resources"))  # if model uses latent variables
 
 
-summary_text <- capture.output(summary(jdr_b_fit, fit.measures = TRUE, standardized = TRUE, modindices = TRUE))
+summary_text = capture.output(summary(jdr_b_fit, fit.measures = TRUE, standardized = TRUE, modindices = TRUE))
 writeLines(summary_text, here::here("analysis/tables/jdr_burnout_fit_summary.txt"))
 ```
 
@@ -240,14 +235,12 @@ dev.off()
 ### Evaluating model
 
 ```{r}
-#inspect(jdr_b_fit, "std")
+inspect(jdr_b_fit, "std")
 ```
 
 # Final model
 
 ```{r}
-write.csv(data_no_outliers, here::here("data/processed/data_no_outliers.csv"), row.names = FALSE)
-
 # ppa also removed
 jdr_final_model = '
   # First-order factors
@@ -285,11 +278,9 @@ jdr_final_model = '
   rlc_1 ~~ rlc_6
   '
 
-jdr_final_fit = sem(jdr_final_model, data = processed, std.lv = TRUE, estimator = "MLR")
+jdr_final_fit = sem(jdr_final_model, data = data, std.lv = TRUE, estimator = "MLR")
 
 summary(jdr_final_fit, fit.measures = TRUE, standardized = TRUE, modindices = TRUE, rsquare = TRUE)
 modindices(jdr_final_fit, sort = TRUE)
-
-
 ```
 
